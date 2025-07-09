@@ -2,20 +2,29 @@ package routes
 
 import (
 	"stringy-api/handlers"
+	"stringy-api/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api")
+	userApi := r.Group("/api/users")
 	{
-		api.GET("/users", handlers.GetUsers)
+		userApi.GET("/", handlers.GetUsers)
+		userApi.POST("/register", handlers.CreateUser)
+		userApi.POST("/login", handlers.LoginUser)
+	}
+
+	protectedUserApi := r.Group("/api/users")
+	protectedUserApi.Use(middleware.AuthMiddleware())
+	{
+		protectedUserApi.GET("/profile", handlers.GetMyProfile)
 	}
 }
 
 func RoomRoutes(r *gin.Engine) {
-	api := r.Group("/api")
+	roomApi := r.Group("/api/rooms")
 	{
-		api.GET("/rooms", handlers.GetRooms)
+		roomApi.GET("/", handlers.GetRooms)
 	}
 }
